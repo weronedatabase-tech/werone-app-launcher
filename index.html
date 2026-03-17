@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WERONE</title>
+    
+    <!-- Link to the physical manifest file -->
+    <link rel="manifest" href="manifest.json">
+    <!-- CHANGED: Theme color is now Black -->
+    <meta name="theme-color" content="#000000">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/weronedatabase-tech/werone-app-launcher/main/werone.jpg">
+
+    <!-- ========================================== -->
+    <!-- ⚙️ ENVIRONMENT CONFIGURATION               -->
+    <!-- ========================================== -->
+    <script>
+        const APP_ENV = "PROD"; // Change to "PROD" to switch back to Live Mode
+
+        const GAS_WEBAPP_URL_PROD = "https://script.google.com/macros/s/AKfycbyDQFQnmqmooqLSwKbhNxiK6nsJF0ywMZlvmPVbE0YQHhOM4G5vGCbSOQDIpC0WN3XU/exec";
+        const GAS_WEBAPP_URL_DEV = "https://script.google.com/macros/s/AKfycbw_WV5UIMt2A_0JnDuIDtjbUAWJFGBRPl-p_7uVP060ryqISRz0jaWSHJwNPC7h0Mw05A/exec";
+        
+        const GAS_WEBAPP_URL = APP_ENV === "PROD" ? GAS_WEBAPP_URL_PROD : GAS_WEBAPP_URL_DEV;
+    </script>
+    <!-- ========================================== -->
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SortableJS for Drag and Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <style>
+        body { -webkit-tap-highlight-color: transparent; }
+        .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 300ms; }
+        .drag-handle { cursor: grab; }
+        .drag-handle:active { cursor: grabbing; }
+        .sortable-ghost { opacity: 0.4; background-color: #f3f4f6; }
+        .dark .sortable-ghost { background-color: #374151; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .app-placeholder {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            color: #4f46e5;
+        }
+        .dark .app-placeholder {
+            background: linear-gradient(135deg, #3730a3 0%, #312e81 100%);
+            color: #a5b4fc;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-all select-none font-sans flex flex-col">
+
+    <!-- Persistent Top Container -->
+    <div class="sticky top-0 z-20 w-full flex flex-col">
+        <!-- Dev Mode Persistent Bar -->
+        <div id="dev-mode-bar" class="hidden bg-red-600 text-white text-center text-[11px] font-bold py-1 uppercase tracking-[0.2em] shadow-md w-full">
+            Dev Mode
+        </div>
+        
+        <!-- Navbar -->
+        <header class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm w-full transition-all">
+            <div class="flex items-center space-x-2 app-title-container">
+                <img src="https://raw.githubusercontent.com/weronedatabase-tech/werone-app-launcher/main/werone.jpg" alt="WERONE Logo" class="w-8 h-8 rounded-md object-cover" onerror="this.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden');">
+                <div id="logo-fallback" class="hidden w-8 h-8 bg-blue-600 dark:bg-blue-500 text-white rounded-md flex items-center justify-center font-bold text-lg shadow-sm">W</div>
+                <h1 class="text-xl font-bold tracking-widest text-gray-800 dark:text-white">WERONE</h1>
+            </div>
+            
+            <div class="flex items-center space-x-1">
+                <button onclick="UI.showSettingsAuth()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-all focus:outline-none" title="Settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                </button>
+                <button onclick="UI.toggleTheme()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-xl" title="Toggle Light/Dark">
+                    🌗
+                </button>
+            </div>
+        </header>
+    </div>
+
+    <!-- Main App Launcher View -->
+    <main id="view-launcher" class="flex-grow p-6 hide-scroll overflow-y-auto">
+        <div id="loading-indicator" class="text-center text-gray-500 mt-10 flex flex-col items-center">
+            <svg class="animate-spin h-8 w-8 mb-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            Loading your workspace...
+        </div>
+        <div id="apps-grid" class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 max-w-5xl mx-auto hidden">
+        </div>
+    </main>
+
+    <!-- Settings Auth View -->
+    <main id="view-auth" class="flex-grow flex items-center justify-center p-6 hidden">
+        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl max-w-sm w-full relative">
+            <button onclick="UI.showLauncher()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white text-xl">✕</button>
+            <h2 class="text-2xl font-bold mb-6 text-center flex justify-center items-center">Admin Access</h2>
+            
+            <div id="auth-alert" class="hidden mb-4 p-3 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded-lg text-sm text-center font-medium"></div>
+
+            <div class="relative mb-6">
+                <input type="password" id="admin-password" placeholder="Enter Password" class="w-full p-3 pr-12 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" onkeypress="if(event.key === 'Enter') App.login()">
+                <button onclick="UI.togglePasswordVisibility('admin-password')" class="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors focus:outline-none" title="Show/Hide Password">
+                    <svg id="icon-eye" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                    <svg id="icon-eye-slash" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 hidden">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                    </svg>
+                </button>
+            </div>
+            
+            <button id="login-btn" onclick="App.login()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all shadow-md active:scale-95">
+                Login
+            </button>
+        </div>
+    </main>
+
+    <!-- Settings Dashboard View -->
+    <main id="view-settings" class="flex-grow p-4 md:p-8 hidden overflow-y-auto hide-scroll">
+        <div class="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col h-full">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
+                <h2 class="text-lg font-bold flex items-center">App Management</h2>
+                <div class="space-x-2">
+                    <button onclick="UI.openAppModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm">
+                        + Add App
+                    </button>
+                    <button onclick="UI.showLauncher()" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-4 py-2 rounded-lg text-sm font-semibold transition-all">
+                        Done
+                    </button>
+                </div>
+            </div>
+            <div class="p-4 flex-grow overflow-y-auto hide-scroll">
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-wider font-semibold">Drag ≡ to reorder apps</p>
+                <div id="settings-app-list" class="space-y-3">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- App Edit/Add Modal -->
+    <div id="app-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all opacity-0 pointer-events-none flex">
+        <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-all">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <h3 id="modal-title" class="font-bold text-lg">Add WebApp</h3>
+                <button onclick="UI.closeAppModal()" class="text-gray-500 hover:text-gray-800 dark:hover:text-white text-xl">✕</button>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <input type="hidden" id="modal-app-id">
+                
+                <div id="modal-alert" class="hidden mb-2 p-3 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded-lg text-sm font-medium"></div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1">App Name</label>
+                    <input type="text" id="modal-app-name" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="e.g., HR Portal">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-1">Launch URL</label>
+                    <input type="url" id="modal-app-url" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="https://...">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1">App Icon</label>
+                    <div class="flex border-b border-gray-200 dark:border-gray-700 mb-3">
+                        <button onclick="UI.setModalIconMode('url')" id="tab-url" class="flex-1 py-2 text-sm border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 font-semibold transition-all">Link URL</button>
+                        <button onclick="UI.setModalIconMode('upload')" id="tab-upload" class="flex-1 py-2 text-sm border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 font-semibold transition-all">Upload File</button>
+                    </div>
+
+                    <div id="icon-url-container">
+                        <input type="url" id="modal-app-iconurl" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="https://... (Optional)">
+                    </div>
+
+                    <div id="icon-upload-container" class="hidden">
+                        <input type="file" id="modal-app-iconfile" accept="image/*" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-400">
+                        <p class="text-xs text-gray-500 mt-2">*Image will be saved to secure Drive folder</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-2">
+                <button onclick="UI.closeAppModal()" class="px-5 py-2 rounded-lg font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">Cancel</button>
+                <button id="modal-save-btn" onclick="App.saveApp()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all flex items-center shadow-md">
+                    <span>Save App</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Injecting Logic & PWA -->
+    <script>
+        let sessionPassword = null;
+        let appsData =[];
+        let sortableInstance = null;
+        let isUploading = false;
+
+        // Register the physical Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => console.log("Service Worker Registered Natively"))
+                .catch(err => console.error("SW Registration Failed:", err));
+        }
+
+        // Network Layer
+        const API = {
+            async request(action, payload = {}) {
+                if(!GAS_WEBAPP_URL) {
+                    throw new Error("Action Required: Please setup the GAS Web App URL.");
+                }
+                
+                if (['addApp', 'editApp', 'deleteApp', 'reorderApps', 'uploadIcon'].includes(action)) {
+                    payload.password = sessionPassword;
+                }
+
+                try {
+                    const response = await fetch(GAS_WEBAPP_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action, payload }),
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        redirect: "follow"
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (action === 'verifyPassword') {
+                        if (result.success === true) return true;
+                        throw new Error("Incorrect Password");
+                    }
+                    
+                    if (!result.success) throw new Error(result.error || "Server action failed.");
+                    return result.data;
+                } catch (err) {
+                    console.error("API Error:", err);
+                    throw new Error(err.message === "Failed to fetch" 
+                        ? "Network error or Backend URL is incorrect/unauthorized by Admin." 
+                        : err.message);
+                }
+            }
+        };
+
+        // Application Logic
+        const App = {
+            async init() {
+                UI.initTheme();
+                UI.renderEnvBadge();
+                await this.refreshData();
+            },
+
+            async refreshData() {
+                UI.showLauncher(true); 
+                try {
+                    appsData = await API.request('getApps');
+                    UI.showLauncher(false); 
+                } catch (err) {
+                    document.getElementById('loading-indicator').innerHTML = `<span class="text-red-500 font-medium text-sm mt-4">Failed to load workspace.<br>${err.message}</span>`;
+                }
+            },
+
+            async login() {
+                const passInput = document.getElementById('admin-password');
+                const alertBox = document.getElementById('auth-alert');
+                const btn = document.getElementById('login-btn'); 
+                
+                try {
+                    btn.innerHTML = `<svg class="animate-spin h-5 w-5 mx-auto text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+                    
+                    const isValid = await API.request('verifyPassword', { password: passInput.value });
+                    if (isValid) {
+                        sessionPassword = passInput.value;
+                        passInput.value = '';
+                        
+                        const iconEye = document.getElementById('icon-eye');
+                        const iconEyeSlash = document.getElementById('icon-eye-slash');
+                        passInput.type = 'password';
+                        if (iconEye) iconEye.classList.remove('hidden');
+                        if (iconEyeSlash) iconEyeSlash.classList.add('hidden');
+                        
+                        alertBox.classList.add('hidden');
+                        UI.showSettingsDashboard();
+                    }
+                } catch (err) {
+                    alertBox.textContent = err.message;
+                    alertBox.classList.remove('hidden');
+                } finally {
+                    btn.innerText = "Login";
+                }
+            },
+
+            async saveApp() {
+                if (isUploading) return;
+                const alertBox = document.getElementById('modal-alert');
+                const btn = document.getElementById('modal-save-btn');
+                
+                const id = document.getElementById('modal-app-id').value;
+                const name = document.getElementById('modal-app-name').value.trim();
+                const url = document.getElementById('modal-app-url').value.trim();
+                let iconUrl = document.getElementById('modal-app-iconurl').value.trim();
+                const fileInput = document.getElementById('modal-app-iconfile');
+                
+                if (!name || !url) {
+                    alertBox.textContent = "Name and Launch URL are required.";
+                    alertBox.classList.remove('hidden');
+                    return;
+                }
+
+                btn.innerHTML = `<svg class="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Saving...`;
+                alertBox.classList.add('hidden');
+                isUploading = true;
+
+                try {
+                    if (!document.getElementById('icon-upload-container').classList.contains('hidden') && fileInput.files.length > 0) {
+                        const file = fileInput.files[0];
+                        const reader = new FileReader();
+                        
+                        const base64Data = await new Promise((resolve, reject) => {
+                            reader.onload = () => resolve(reader.result.split(',')[1]);
+                            reader.onerror = error => reject(error);
+                            reader.readAsDataURL(file);
+                        });
+
+                        btn.innerHTML = `<svg class="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Uploading Icon...`;
+                        
+                        iconUrl = await API.request('uploadIcon', {
+                            filename: file.name,
+                            base64: base64Data,
+                            mimeType: file.type
+                        });
+                    }
+
+                    const appData = { id, name, url, iconUrl };
+                    
+                    if (id) {
+                        await API.request('editApp', { app: appData });
+                        const idx = appsData.findIndex(a => a.ID === id);
+                        if(idx > -1) {
+                            appsData[idx].Name = name;
+                            appsData[idx].URL = url;
+                            appsData[idx].IconURL = iconUrl;
+                        }
+                    } else {
+                        const newIdObj = await API.request('addApp', { app: appData });
+                        appsData.push({ ID: newIdObj.id, Name: name, URL: url, IconURL: iconUrl, OrderIndex: appsData.length });
+                    }
+                    
+                    UI.closeAppModal();
+                    UI.renderSettingsList();
+                } catch (err) {
+                    alertBox.textContent = err.message;
+                    alertBox.classList.remove('hidden');
+                } finally {
+                    btn.innerHTML = `Save App`;
+                    isUploading = false;
+                }
+            },
+
+            async deleteApp(id) {
+                if(!confirm("Are you sure you want to remove this app?")) return;
+                try {
+                    await API.request('deleteApp', { id });
+                    appsData = appsData.filter(a => a.ID !== id);
+                    UI.renderSettingsList();
+                } catch (err) {
+                    alert("Failed to delete: " + err.message);
+                }
+            },
+
+            async saveOrder() {
+                const list = document.getElementById('settings-app-list');
+                const orderedIds = Array.from(list.children).map(item => item.dataset.id);
+                try {
+                    await API.request('reorderApps', { orderedIds });
+                    appsData.sort((a,b) => orderedIds.indexOf(a.ID) - orderedIds.indexOf(b.ID));
+                } catch (err) {
+                    console.error("Failed to reorder:", err);
+                }
+            }
+        };
+
+        // UI Manipulation Logic
+        const UI = {
+            initTheme() {
+                if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            },
+
+            toggleTheme() {
+                document.documentElement.classList.toggle('dark');
+                localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            },
+
+            renderEnvBadge() {
+                if (APP_ENV === "DEV") {
+                    const devBar = document.getElementById('dev-mode-bar');
+                    if (devBar) devBar.classList.remove('hidden');
+                }
+            },
+
+            togglePasswordVisibility(id) {
+                const input = document.getElementById(id);
+                const iconEye = document.getElementById('icon-eye');
+                const iconEyeSlash = document.getElementById('icon-eye-slash');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    if (iconEye) iconEye.classList.add('hidden');
+                    if (iconEyeSlash) iconEyeSlash.classList.remove('hidden');
+                } else {
+                    input.type = 'password';
+                    if (iconEye) iconEye.classList.remove('hidden');
+                    if (iconEyeSlash) iconEyeSlash.classList.add('hidden');
+                }
+            },
+
+            showLauncher(loading = false) {
+                this.hideAllViews();
+                document.getElementById('view-launcher').classList.remove('hidden');
+                document.getElementById('loading-indicator').classList.toggle('hidden', !loading);
+                document.getElementById('apps-grid').classList.toggle('hidden', loading);
+                if(!loading) this.renderAppsGrid();
+            },
+
+            showSettingsAuth() {
+                if (sessionPassword) {
+                    this.showSettingsDashboard();
+                } else {
+                    this.hideAllViews();
+                    document.getElementById('view-auth').classList.remove('hidden');
+                    document.getElementById('admin-password').focus();
+                    document.getElementById('auth-alert').classList.add('hidden');
+                }
+            },
+
+            showSettingsDashboard() {
+                this.hideAllViews();
+                document.getElementById('view-settings').classList.remove('hidden');
+                this.renderSettingsList();
+            },
+
+            hideAllViews() {['view-launcher', 'view-auth', 'view-settings'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden');
+                });
+            },
+
+            renderAppsGrid() {
+                const grid = document.getElementById('apps-grid');
+                grid.innerHTML = '';
+                
+                if(appsData.length === 0) {
+                    grid.innerHTML = `<div class="col-span-full text-center text-gray-400 mt-10">No web apps installed. Add some in settings!</div>`;
+                    return;
+                }
+
+                appsData.forEach(app => {
+                    const el = document.createElement('a');
+                    el.href = app.URL;
+                    el.target = '_blank';
+                    el.rel = 'noopener noreferrer';
+                    el.className = "flex flex-col items-center group cursor-pointer active:scale-95 transition-transform";
+                    
+                    let iconHtml = '';
+                    const initial = app.Name ? app.Name.charAt(0).toUpperCase() : '?';
+                    
+                    const fallbackHtml = `<div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl shadow-sm app-placeholder flex items-center justify-center text-3xl font-bold transition-transform group-hover:-translate-y-1">${initial}</div>`;
+                    const safeFallback = fallbackHtml.replace(/"/g, '&quot;');
+
+                    if (app.IconURL && app.IconURL.length > 5) {
+                        let finalUrl = app.IconURL;
+                        let errHandler = `this.outerHTML='${safeFallback}'`;
+
+                        if (finalUrl.includes('drive.google.com')) {
+                            const match = finalUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                            if (match && match[1]) {
+                                finalUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w256`;
+                            }
+                        } else if (finalUrl.startsWith('http')) {
+                            const proxyUrl = `https://wsrv.nl/?url=${encodeURIComponent(finalUrl)}&w=256&output=webp`;
+                            errHandler = `if(!this.dataset.retried){this.dataset.retried='true'; this.src='${proxyUrl}';} else {this.outerHTML='${safeFallback}';}`;
+                        }
+
+                        iconHtml = `<img src="${finalUrl}" alt="${app.Name}" referrerpolicy="no-referrer" class="w-16 h-16 md:w-20 md:h-20 object-contain rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 transition-transform group-hover:-translate-y-1" onerror="${errHandler}">`;
+                    } else {
+                        iconHtml = fallbackHtml;
+                    }
+
+                    el.innerHTML = `
+                        ${iconHtml}
+                        <span class="mt-3 text-xs md:text-sm font-medium text-center w-full px-1 line-clamp-2 leading-tight">${app.Name}</span>
+                    `;
+                    grid.appendChild(el);
+                });
+            },
+
+            renderSettingsList() {
+                const list = document.getElementById('settings-app-list');
+                list.innerHTML = '';
+                
+                appsData.forEach(app => {
+                    const li = document.createElement('div');
+                    li.dataset.id = app.ID;
+                    li.className = "flex items-center bg-gray-50 dark:bg-gray-900/50 p-3 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm";
+                    li.innerHTML = `
+                        <div class="drag-handle p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 mr-2" title="Drag to reorder">≡</div>
+                        <div class="flex-grow min-w-0">
+                            <h4 class="font-semibold text-sm truncate">${app.Name}</h4>
+                            <p class="text-xs text-gray-500 truncate">${app.URL}</p>
+                        </div>
+                        <div class="flex space-x-2 ml-4">
+                            <button onclick='UI.openAppModal(${JSON.stringify(app).replace(/'/g, "&#39;")})' class="p-2 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-xs transition-colors">Edit</button>
+                            <button onclick="App.deleteApp('${app.ID}')" class="p-2 bg-white dark:bg-gray-800 text-red-600 dark:text-red-400 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs transition-colors">Delete</button>
+                        </div>
+                    `;
+                    list.appendChild(li);
+                });
+
+                if(sortableInstance) sortableInstance.destroy();
+                sortableInstance = new Sortable(list, {
+                    handle: '.drag-handle',
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    onEnd: () => App.saveOrder()
+                });
+            },
+
+            openAppModal(app = null) {
+                const modal = document.getElementById('app-modal');
+                document.getElementById('modal-alert').classList.add('hidden');
+                
+                if (app) {
+                    document.getElementById('modal-title').innerText = 'Edit WebApp';
+                    document.getElementById('modal-app-id').value = app.ID;
+                    document.getElementById('modal-app-name').value = app.Name;
+                    document.getElementById('modal-app-url').value = app.URL;
+                    document.getElementById('modal-app-iconurl').value = app.IconURL || '';
+                    this.setModalIconMode('url');
+                } else {
+                    document.getElementById('modal-title').innerText = 'Add WebApp';
+                    document.getElementById('modal-app-id').value = '';
+                    document.getElementById('modal-app-name').value = '';
+                    document.getElementById('modal-app-url').value = '';
+                    document.getElementById('modal-app-iconurl').value = '';
+                    document.getElementById('modal-app-iconfile').value = '';
+                    this.setModalIconMode('url');
+                }
+
+                modal.classList.remove('hidden');
+                void modal.offsetWidth;
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modal.firstElementChild.classList.remove('scale-95');
+            },
+
+            closeAppModal() {
+                const modal = document.getElementById('app-modal');
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                modal.firstElementChild.classList.add('scale-95');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            },
+
+            setModalIconMode(mode) {
+                const urlCont = document.getElementById('icon-url-container');
+                const upCont = document.getElementById('icon-upload-container');
+                const tabUrl = document.getElementById('tab-url');
+                const tabUp = document.getElementById('tab-upload');
+                
+                const activeClasses =['border-blue-600', 'text-blue-600', 'dark:text-blue-400'];
+                const inactiveClasses =['border-transparent', 'text-gray-500', 'hover:text-gray-700', 'dark:hover:text-gray-300'];
+
+                if (mode === 'url') {
+                    urlCont.classList.remove('hidden');
+                    upCont.classList.add('hidden');
+                    document.getElementById('modal-app-iconfile').value = ''; 
+                    
+                    tabUrl.classList.add(...activeClasses);
+                    tabUrl.classList.remove(...inactiveClasses);
+                    tabUp.classList.remove(...activeClasses);
+                    tabUp.classList.add(...inactiveClasses);
+                } else {
+                    urlCont.classList.add('hidden');
+                    upCont.classList.remove('hidden');
+                    document.getElementById('modal-app-iconurl').value = ''; 
+                    
+                    tabUp.classList.add(...activeClasses);
+                    tabUp.classList.remove(...inactiveClasses);
+                    tabUrl.classList.remove(...activeClasses);
+                    tabUrl.classList.add(...inactiveClasses);
+                }
+            }
+        };
+
+        // Bootstrap
+        document.addEventListener('DOMContentLoaded', () => App.init());
+
+    </script>
+</body>
+</html>
