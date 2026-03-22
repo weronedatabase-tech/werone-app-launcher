@@ -6,24 +6,21 @@
     <title>WERONE</title>
     
     <meta name="theme-color" content="#000000">
+    <!-- Uses the local repo icon for Apple devices -->
+    <link rel="apple-touch-icon" href="./icon-192.png">
 
     <!-- ========================================== -->
     <!-- ⚙️ ENVIRONMENT CONFIGURATION               -->
     <!-- ========================================== -->
     <script>
-        const APP_ENV = "PROD"; // Change to "PROD" to switch back to Live Mode
+        const APP_ENV = "DEV"; // Change to "PROD" to switch back to Live Mode
 
         const GAS_WEBAPP_URL_PROD = "https://script.google.com/macros/s/AKfycbyDQFQnmqmooqLSwKbhNxiK6nsJF0ywMZlvmPVbE0YQHhOM4G5vGCbSOQDIpC0WN3XU/exec";
         const GAS_WEBAPP_URL_DEV = "https://script.google.com/macros/s/AKfycbw_WV5UIMt2A_0JnDuIDtjbUAWJFGBRPl-p_7uVP060ryqISRz0jaWSHJwNPC7h0Mw05A/exec";
         
         const GAS_WEBAPP_URL = APP_ENV === "PROD" ? GAS_WEBAPP_URL_PROD : GAS_WEBAPP_URL_DEV;
 
-        // Image Constants (Auto-Switched based on Environment)
-        const ICON_PROD = "https://raw.githubusercontent.com/weronedatabase-tech/werone-app-launcher/main/werone.jpg";
-        const ICON_DEV = "https://raw.githubusercontent.com/weronedatabase-tech/werone-app-launcher-Dev/6ffb310ec9f162f78936d7f0bc9e92cced58afb6/IMG_20260322_111224.jpg";
-        const APP_ICON = APP_ENV === "PROD" ? ICON_PROD : ICON_DEV;
-
-        // Dynamically build the PWA manifest so Icons and App Names switch automatically
+        // Dynamically build the PWA manifest to switch App Names based on Env
         const manifest = {
             name: "WERONE" + (APP_ENV === "DEV" ? " (Dev)" : ""),
             short_name: "WERONE" + (APP_ENV === "DEV" ? " Dev" : ""),
@@ -32,14 +29,13 @@
             background_color: "#ffffff",
             theme_color: "#000000",
             icons:[
-                { src: APP_ICON, sizes: "192x192", type: "image/jpeg", purpose: "any maskable" },
-                { src: APP_ICON, sizes: "512x512", type: "image/jpeg", purpose: "any maskable" }
+                { src: "./icon-192.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
+                { src: "./icon-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" }
             ]
         };
         
         const manifestData = "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifest));
         document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${manifestData}">`);
-        document.head.insertAdjacentHTML('beforeend', `<link rel="apple-touch-icon" href="${APP_ICON}">`);
     </script>
     <!-- ========================================== -->
 
@@ -82,9 +78,8 @@
         <!-- Navbar -->
         <header class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm w-full transition-all">
             <div class="flex items-center space-x-2 app-title-container">
-                <img id="navbar-logo" alt="WERONE Logo" class="w-8 h-8 rounded-md object-cover" onerror="this.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden');">
-                <script>document.getElementById('navbar-logo').src = APP_ICON;</script>
-                
+                <!-- Universally fetches the local repo icon -->
+                <img src="./icon-192.png" alt="WERONE Logo" class="w-8 h-8 rounded-md object-cover" onerror="this.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden');">
                 <div id="logo-fallback" class="hidden w-8 h-8 bg-blue-600 dark:bg-blue-500 text-white rounded-md flex items-center justify-center font-bold text-lg shadow-sm">W</div>
                 <h1 class="text-xl font-bold tracking-widest text-gray-800 dark:text-white">WERONE</h1>
             </div>
