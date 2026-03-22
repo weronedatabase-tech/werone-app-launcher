@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WERONE</title>
     
-    <!-- Link to the physical manifest file -->
-    <link rel="manifest" href="manifest.json">
-    <!-- CHANGED: Theme color is now Black -->
     <meta name="theme-color" content="#000000">
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/weronedatabase-tech/werone-app-launcher/main/werone.jpg">
 
     <!-- ========================================== -->
     <!-- ⚙️ ENVIRONMENT CONFIGURATION               -->
@@ -19,8 +15,30 @@
 
         const GAS_WEBAPP_URL_PROD = "https://script.google.com/macros/s/AKfycbyDQFQnmqmooqLSwKbhNxiK6nsJF0ywMZlvmPVbE0YQHhOM4G5vGCbSOQDIpC0WN3XU/exec";
         const GAS_WEBAPP_URL_DEV = "https://script.google.com/macros/s/AKfycbw_WV5UIMt2A_0JnDuIDtjbUAWJFGBRPl-p_7uVP060ryqISRz0jaWSHJwNPC7h0Mw05A/exec";
-        
         const GAS_WEBAPP_URL = APP_ENV === "PROD" ? GAS_WEBAPP_URL_PROD : GAS_WEBAPP_URL_DEV;
+
+        // Image Constants (Auto-Switched based on Environment)
+        const ICON_PROD = "https://raw.githubusercontent.com/weronedatabase-tech/werone-app-launcher/main/werone.jpg";
+        const ICON_DEV = "https://raw.githubusercontent.com/weronedatabase-tech/werone-app-launcher-Dev/891009d6786679c8a8a6438ce97719040cc24983/Screenshot_2026-03-22-09-35-11-70_71a729390c97f0859a897142dab869f3.jpg";
+        const APP_ICON = APP_ENV === "PROD" ? ICON_PROD : ICON_DEV;
+
+        // Dynamically build the PWA manifest so Icons and App Names switch automatically
+        const manifest = {
+            name: "WERONE" + (APP_ENV === "DEV" ? " (Dev)" : ""),
+            short_name: "WERONE" + (APP_ENV === "DEV" ? " Dev" : ""),
+            start_url: "./",
+            display: "standalone",
+            background_color: "#ffffff",
+            theme_color: "#000000",
+            icons:[
+                { src: APP_ICON, sizes: "192x192", type: "image/jpeg", purpose: "any maskable" },
+                { src: APP_ICON, sizes: "512x512", type: "image/jpeg", purpose: "any maskable" }
+            ]
+        };
+        
+        const manifestData = "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifest));
+        document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${manifestData}">`);
+        document.head.insertAdjacentHTML('beforeend', `<link rel="apple-touch-icon" href="${APP_ICON}">`);
     </script>
     <!-- ========================================== -->
 
@@ -62,12 +80,18 @@
         
         <!-- Navbar -->
         <header class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm w-full transition-all">
+            
+            <!-- Logo & Title Area -->
             <div class="flex items-center space-x-2 app-title-container">
-                <img src="https://raw.githubusercontent.com/weronedatabase-tech/werone-app-launcher/main/werone.jpg" alt="WERONE Logo" class="w-8 h-8 rounded-md object-cover" onerror="this.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden');">
+                <img id="navbar-logo" alt="WERONE Logo" class="w-8 h-8 rounded-md object-cover" onerror="this.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden');">
+                <script>document.getElementById('navbar-logo').src = APP_ICON;</script>
+                
                 <div id="logo-fallback" class="hidden w-8 h-8 bg-blue-600 dark:bg-blue-500 text-white rounded-md flex items-center justify-center font-bold text-lg shadow-sm">W</div>
+                
                 <h1 class="text-xl font-bold tracking-widest text-gray-800 dark:text-white">WERONE</h1>
             </div>
             
+            <!-- Interactive Tools Area -->
             <div class="flex items-center space-x-1">
                 <button onclick="UI.showSettingsAuth()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-all focus:outline-none" title="Settings">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
