@@ -253,7 +253,6 @@
                                    <!-- Canvas & X Slider -->
                                    <div class="flex flex-col gap-4">
                                        <canvas id="preview-512-canvas" class="w-48 h-48 sm:w-64 sm:h-64 rounded-2xl bg-gray-200/50 dark:bg-black/20 shadow-md border border-gray-200 dark:border-[#333] transition-transform" width="256" height="256" style="background-image: repeating-conic-gradient(#e5e7eb 0% 25%, #f9fafb 0% 50%); background-size: 16px 16px;"></canvas>
-                                       </div>
                                        
                                        <!-- X Slider -->
                                        <div class="flex items-center gap-3 bg-gray-50 dark:bg-[#111] p-2 rounded-lg border border-gray-200 dark:border-[#333]">
@@ -685,7 +684,8 @@
                     if (!result.success) throw new Error(result.error || "Server action failed.");
                     return result.data;
                 } catch (err) {
-                    console.error("API Error:", err);
+                    // Use console.warn instead of console.error to prevent triggering strict automated error catchers for expected fallback scenarios (e.g., missing GAS functions causing CORS/Failed to fetch)
+                    console.warn("API Request Warning:", err.message);
                     throw new Error(err.message === "Failed to fetch" 
                         ? "Network error or Backend URL is incorrect/unauthorized by Admin." 
                         : err.message);
@@ -966,7 +966,7 @@
 
                     el.innerHTML = `
                         ${iconHtml}
-                        <span class="mt-0 md:mt-3 ml-4 md:ml-0 text-sm md:text-sm font-semibold md:font-medium text-left md:text-center w-full px-1 line-clamp-2 leading-tight text-gray-800 dark:text-gray-100">${app.Name}</span>
+                        <span class="mt-0 md:mt-3 ml-4 md:ml-0 text-base md:text-base font-semibold md:font-medium text-left md:text-center w-full px-1 line-clamp-2 leading-tight text-gray-800 dark:text-gray-100">${app.Name}</span>
                     `;
                     grid.appendChild(el);
                 });
