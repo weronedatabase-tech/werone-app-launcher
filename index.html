@@ -210,41 +210,49 @@
                     </div>
 
                     <!-- Icon Editor Workspace -->
-                    <div id="icon-editor-workspace" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-100/50 dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#333] rounded-xl p-4 mt-4 hidden">
-                       <div class="space-y-1.5">
-                           <label class="font-semibold text-[10px] uppercase tracking-wider text-gray-500">Environment Banner</label>
-                           <select id="icon-env-select" class="w-full border border-gray-300 dark:border-[#333] rounded-lg py-1.5 px-3 bg-white dark:bg-[#1a1a1a] text-gray-700 dark:text-gray-300 outline-none focus:border-blue-500 transition text-xs appearance-none">
-                               <option value="prod">Production (None)</option>
-                               <option value="dev">Development (Testing)</option>
-                               <option value="exp">Experimentation</option>
-                           </select>
-                       </div>
-                       <div class="flex items-center justify-start md:justify-end gap-2 pt-2 md:pt-5">
-                           <input type="checkbox" id="icon-sharpen" class="w-4 h-4 rounded accent-blue-600 bg-white dark:bg-black border-gray-300 dark:border-[#555] cursor-pointer">
-                           <label for="icon-sharpen" class="text-xs font-semibold text-gray-700 dark:text-gray-400 cursor-pointer select-none transition">Sharpen Filter</label>
-                       </div>
+                    <div id="icon-editor-workspace" class="flex flex-col gap-4 bg-gray-100/50 dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#333] rounded-xl p-4 mt-4 hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="font-semibold text-[10px] uppercase tracking-wider text-gray-500">Environment Banner</label>
+                                <select id="icon-env-select" class="w-full border border-gray-300 dark:border-[#333] rounded-lg py-1.5 px-3 bg-white dark:bg-[#1a1a1a] text-gray-700 dark:text-gray-300 outline-none focus:border-blue-500 transition text-xs appearance-none">
+                                    <option value="prod">Production (None)</option>
+                                    <option value="dev">Development (Testing)</option>
+                                    <option value="exp">Experimentation</option>
+                                </select>
+                            </div>
+                            
+                            <div class="space-y-1.5 flex flex-col justify-end">
+                                <label class="font-semibold text-[10px] uppercase tracking-wider text-gray-500 mb-1 md:hidden">Filters & Background</label>
+                                <div class="flex items-center flex-wrap gap-4 md:justify-end">
+                                    <!-- Color Picker & Transparent -->
+                                    <div class="flex items-center gap-2" title="Background Options">
+                                        <div class="w-8 h-8 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#444] rounded-full shadow-sm flex items-center justify-center relative overflow-hidden shrink-0 hover:border-blue-500 transition-colors">
+                                            <div id="bg-color-indicator" class="w-5 h-5 rounded-full border border-gray-200 dark:border-[#444]" style="background-color: #FFFFFF;"></div>
+                                            <input type="color" id="icon-bg-color" value="#FFFFFF" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                        </div>
+                                        <label class="flex items-center gap-1.5 cursor-pointer">
+                                            <input type="checkbox" id="icon-bg-transparent" class="w-3.5 h-3.5 accent-blue-600 rounded">
+                                            <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">Transparent</span>
+                                        </label>
+                                    </div>
+                                    <!-- Divider -->
+                                    <div class="w-px h-5 bg-gray-300 dark:bg-[#444] hidden md:block"></div>
+                                    <!-- Sharpen Filter -->
+                                    <div class="flex items-center gap-1.5">
+                                        <input type="checkbox" id="icon-sharpen" class="w-3.5 h-3.5 rounded accent-blue-600 bg-white dark:bg-black border-gray-300 dark:border-[#555] cursor-pointer">
+                                        <label for="icon-sharpen" class="text-xs font-semibold text-gray-700 dark:text-gray-400 cursor-pointer select-none transition">Sharpen</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                       <!-- Workspace -->
-                        <div class="relative w-full flex items-center justify-center transition-opacity duration-300 z-10 col-span-full mt-2">
+                        <!-- Workspace -->
+                        <div class="relative w-full flex items-center justify-center transition-opacity duration-300 z-10 mt-2">
                            <div class="flex flex-col items-center gap-4">
                                <div class="flex items-end gap-4">
-                                   <!-- Canvas & Bg Color & X Slider -->
+                                   <!-- Canvas & X Slider -->
                                    <div class="flex flex-col gap-4">
-                                       <div class="relative group">
-                                           <!-- Floating Tool Bar -->
-                                           <div class="absolute -top-12 -left-4 z-20 flex items-center gap-2" title="Background Options">
-                                               <!-- Color Picker -->
-                                               <div class="w-10 h-10 bg-white dark:bg-[#1a1a1a] border-2 border-gray-200 dark:border-[#444] rounded-full shadow-lg flex items-center justify-center group-hover:border-blue-500 transition-colors relative overflow-hidden">
-                                                   <div id="bg-color-indicator" class="w-6 h-6 rounded-full border border-gray-200 dark:border-[#444]" style="background-color: #FFFFFF;"></div>
-                                                   <input type="color" id="icon-bg-color" value="#FFFFFF" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                                               </div>
-                                               <!-- Transparent Toggle -->
-                                               <label class="flex items-center gap-1.5 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#444] px-3 py-1.5 rounded-full shadow-md cursor-pointer hover:bg-gray-50 dark:hover:bg-[#222] transition-colors">
-                                                   <input type="checkbox" id="icon-bg-transparent" class="w-3.5 h-3.5 accent-blue-600 rounded">
-                                                   <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">Transparent</span>
-                                               </label>
-                                           </div>
-                                           <canvas id="preview-512-canvas" class="w-48 h-48 sm:w-64 sm:h-64 rounded-2xl bg-gray-200/50 dark:bg-black/20 shadow-md border border-gray-200 dark:border-[#333] transition-transform" width="256" height="256" style="background-image: repeating-conic-gradient(#e5e7eb 0% 25%, #f9fafb 0% 50%); background-size: 16px 16px;"></canvas>
+                                       <canvas id="preview-512-canvas" class="w-48 h-48 sm:w-64 sm:h-64 rounded-2xl bg-gray-200/50 dark:bg-black/20 shadow-md border border-gray-200 dark:border-[#333] transition-transform" width="256" height="256" style="background-image: repeating-conic-gradient(#e5e7eb 0% 25%, #f9fafb 0% 50%); background-size: 16px 16px;"></canvas>
                                        </div>
                                        
                                        <!-- X Slider -->
