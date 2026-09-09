@@ -189,10 +189,13 @@
                     </div>
 
                     <div id="icon-drive-container">
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 mb-2">
                             <input type="text" id="modal-app-icondrive" class="flex-grow p-3 border border-gray-300 dark:border-[#333] rounded-lg bg-gray-50 dark:bg-[#1a1a1a] focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="Drive URL or ID">
-                            <button type="button" onclick="IconStudio.loadImageFromDrive()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all whitespace-nowrap">Load Image</button>
+                            <button type="button" onclick="DriveBrowser.open()" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-[#222] dark:hover:bg-[#333] text-gray-700 dark:text-gray-300 rounded-lg font-semibold transition-all whitespace-nowrap border border-gray-300 dark:border-[#444]" title="Browse Google Drive">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                            </button>
                         </div>
+                        <button type="button" onclick="IconStudio.loadImageFromDrive()" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all whitespace-nowrap">Load Image</button>
                     </div>
 
                     <div id="icon-url-container" class="hidden">
@@ -222,20 +225,26 @@
                        </div>
 
                        <!-- Workspace -->
-                       <div class="relative w-full flex items-center justify-center transition-opacity duration-300 z-10 col-span-full mt-2">
+                        <div class="relative w-full flex items-center justify-center transition-opacity duration-300 z-10 col-span-full mt-2">
                            <div class="flex flex-col items-center gap-4">
                                <div class="flex items-end gap-4">
                                    <!-- Canvas & Bg Color & X Slider -->
                                    <div class="flex flex-col gap-4">
                                        <div class="relative group">
-                                           <!-- Floating Base Color Picker -->
-                                           <div class="absolute -top-4 -left-4 z-20 flex items-center justify-center group" title="Background Color">
+                                           <!-- Floating Tool Bar -->
+                                           <div class="absolute -top-12 -left-4 z-20 flex items-center gap-2" title="Background Options">
+                                               <!-- Color Picker -->
                                                <div class="w-10 h-10 bg-white dark:bg-[#1a1a1a] border-2 border-gray-200 dark:border-[#444] rounded-full shadow-lg flex items-center justify-center group-hover:border-blue-500 transition-colors relative overflow-hidden">
                                                    <div id="bg-color-indicator" class="w-6 h-6 rounded-full border border-gray-200 dark:border-[#444]" style="background-color: #FFFFFF;"></div>
                                                    <input type="color" id="icon-bg-color" value="#FFFFFF" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                                                </div>
+                                               <!-- Transparent Toggle -->
+                                               <label class="flex items-center gap-1.5 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#444] px-3 py-1.5 rounded-full shadow-md cursor-pointer hover:bg-gray-50 dark:hover:bg-[#222] transition-colors">
+                                                   <input type="checkbox" id="icon-bg-transparent" class="w-3.5 h-3.5 accent-blue-600 rounded">
+                                                   <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">Transparent</span>
+                                               </label>
                                            </div>
-                                           <canvas id="preview-512-canvas" class="w-48 h-48 sm:w-64 sm:h-64 rounded-2xl bg-black/5 shadow-md border border-gray-200 dark:border-[#333] transition-transform" width="512" height="512"></canvas>
+                                           <canvas id="preview-512-canvas" class="w-48 h-48 sm:w-64 sm:h-64 rounded-2xl bg-gray-200/50 dark:bg-black/20 shadow-md border border-gray-200 dark:border-[#333] transition-transform" width="256" height="256" style="background-image: repeating-conic-gradient(#e5e7eb 0% 25%, #f9fafb 0% 50%); background-size: 16px 16px;"></canvas>
                                        </div>
                                        
                                        <!-- X Slider -->
@@ -258,6 +267,14 @@
                                    <input type="range" id="icon-scale" min="0.1" max="3" step="0.01" value="1" class="flex-grow accent-blue-500 h-1.5 bg-gray-300 dark:bg-[#444] rounded-lg appearance-none cursor-pointer">
                                    <span id="scale-val" class="text-[10px] font-mono text-gray-500 dark:text-gray-400 w-8 text-right shrink-0">1.00x</span>
                                </div>
+                               
+                               <!-- Reset Customizations -->
+                               <div class="w-full flex justify-end mt-1">
+                                   <button type="button" onclick="IconStudio.resetCustomizations()" class="text-xs font-semibold text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded bg-gray-100/50 hover:bg-gray-100 dark:bg-black/20 dark:hover:bg-black/50 border border-transparent hover:border-gray-200 dark:hover:border-[#333]">
+                                       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                       Reset Adjustments
+                                   </button>
+                               </div>
                            </div>
                        </div>
                     </div>
@@ -273,6 +290,30 @@
         </div>
     </div>
 
+    <!-- Drive Browser Modal -->
+    <div id="drive-browser-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-[60] p-4 transition-all opacity-0 pointer-events-none flex">
+        <div class="bg-white dark:bg-[#111] w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-all flex flex-col max-h-[80vh]">
+            <div class="p-4 border-b border-gray-200 dark:border-[#222] flex justify-between items-center bg-gray-50 dark:bg-[#1a1a1a]">
+                <div class="flex items-center gap-2 text-gray-800 dark:text-white">
+                    <button onclick="DriveBrowser.goUp()" id="drive-up-btn" class="p-1 hover:bg-gray-200 dark:hover:bg-[#333] rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <h3 id="drive-browser-title" class="font-bold text-lg">My Drive</h3>
+                </div>
+                <button onclick="DriveBrowser.close()" class="text-gray-500 hover:text-gray-800 dark:hover:text-white text-xl">✕</button>
+            </div>
+            
+            <div class="p-0 overflow-y-auto flex-grow relative bg-white dark:bg-[#0a0a0a]" id="drive-browser-list">
+                <!-- Content injected here -->
+            </div>
+            
+            <div class="p-4 border-t border-gray-200 dark:border-[#222] bg-gray-50 dark:bg-[#1a1a1a] flex justify-between items-center text-sm">
+                <span class="text-gray-500 dark:text-gray-400">Select an image file for your app icon</span>
+                <button onclick="DriveBrowser.close()" class="px-4 py-1.5 rounded-lg font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#333] transition-all border border-gray-300 dark:border-[#444]">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Injecting Logic & PWA -->
     <script>
         let sessionPassword = null;
@@ -280,12 +321,113 @@
         let sortableInstance = null;
         let isUploading = false;
 
+        const DriveBrowser = {
+            currentPath: [{ id: 'root', name: 'My Drive' }],
+            
+            async open() {
+                const modal = document.getElementById('drive-browser-modal');
+                modal.classList.remove('hidden');
+                void modal.offsetWidth;
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modal.firstElementChild.classList.remove('scale-95');
+                await this.loadFolder('root', 'My Drive');
+            },
+
+            close() {
+                const modal = document.getElementById('drive-browser-modal');
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                modal.firstElementChild.classList.add('scale-95');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            },
+
+            async loadFolder(id, name) {
+                const list = document.getElementById('drive-browser-list');
+                const title = document.getElementById('drive-browser-title');
+                const upBtn = document.getElementById('drive-up-btn');
+                
+                if (id === 'root') {
+                    this.currentPath = [{ id: 'root', name: 'My Drive' }];
+                } else {
+                    const existingIdx = this.currentPath.findIndex(p => p.id === id);
+                    if (existingIdx > -1) {
+                        this.currentPath = this.currentPath.slice(0, existingIdx + 1);
+                    } else {
+                        this.currentPath.push({ id, name });
+                    }
+                }
+                
+                title.textContent = this.currentPath[this.currentPath.length - 1].name;
+                upBtn.disabled = this.currentPath.length <= 1;
+
+                list.innerHTML = `<div class="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-black/50 z-10"><svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>`;
+
+                try {
+                    // We attempt to call the GAS backend to fetch contents (both folders and files if supported)
+                    // Since we don't know the exact endpoint name, we try 'getDriveFiles'.
+                    // If it fails, we catch it and display a friendly error/fallback message.
+                    const contents = await API.request('getDriveFiles', { parentId: id });
+                    this.renderContents(contents);
+                } catch (err) {
+                    list.innerHTML = `
+                        <div class="p-6 text-center text-gray-500 dark:text-gray-400">
+                            <svg class="w-12 h-12 mx-auto mb-3 text-red-400 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            <p class="text-sm">Unable to browse Drive. The backend script may not have the <code>getDriveFiles</code> function deployed.</p>
+                            <p class="text-xs mt-2 opacity-70">Please manually paste the Google Drive ID or URL in the input instead.</p>
+                        </div>
+                    `;
+                }
+            },
+
+            goUp() {
+                if (this.currentPath.length > 1) {
+                    const parent = this.currentPath[this.currentPath.length - 2];
+                    this.loadFolder(parent.id, parent.name);
+                }
+            },
+
+            renderContents(contents) {
+                const list = document.getElementById('drive-browser-list');
+                list.innerHTML = '';
+                
+                if (!contents || contents.length === 0) {
+                    list.innerHTML = `<div class="p-8 text-center text-sm text-gray-500">This folder is empty.</div>`;
+                    return;
+                }
+
+                contents.forEach(item => {
+                    const isFolder = item.mimeType === 'application/vnd.google-apps.folder';
+                    const el = document.createElement('div');
+                    el.className = "flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-[#1a1a1a] cursor-pointer border-b border-gray-100 dark:border-[#222] transition-colors";
+                    
+                    const icon = isFolder 
+                        ? `<svg class="w-6 h-6 text-gray-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>`
+                        : `<svg class="w-6 h-6 text-blue-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg>`;
+
+                    el.innerHTML = `
+                        ${icon}
+                        <span class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate flex-grow">${item.name}</span>
+                    `;
+                    
+                    el.onclick = () => {
+                        if (isFolder) {
+                            this.loadFolder(item.id, item.name);
+                        } else {
+                            document.getElementById('modal-app-icondrive').value = item.id;
+                            this.close();
+                            IconStudio.loadImageFromDrive();
+                        }
+                    };
+                    
+                    list.appendChild(el);
+                });
+            }
+        };
+
         const IconStudio = {
             img: new Image(),
             isLoaded: false,
 
             init() {
-                this.img.crossOrigin = 'Anonymous';
                 this.img.onload = () => this.onImageLoaded();
                 this.img.onerror = () => {
                     const alertBox = document.getElementById('modal-alert');
@@ -303,10 +445,11 @@
 
                 document.getElementById('icon-bg-color').addEventListener('input', (e) => {
                     document.getElementById('bg-color-indicator').style.backgroundColor = e.target.value;
+                    document.getElementById('icon-bg-transparent').checked = false;
                     this.render();
                 });
 
-                ['icon-sharpen', 'icon-env-select'].forEach(id => {
+                ['icon-sharpen', 'icon-env-select', 'icon-bg-transparent'].forEach(id => {
                     document.getElementById(id).addEventListener('change', () => this.render());
                 });
             },
@@ -321,12 +464,14 @@
                 if (!val) return;
                 const id = this.extractDriveId(val);
                 const directUrl = `https://drive.google.com/thumbnail?id=${id}&sz=w512`;
+                this.img.crossOrigin = 'Anonymous';
                 this.img.src = `https://wsrv.nl/?url=${encodeURIComponent(directUrl)}&output=png`;
             },
 
             loadImageFromUrl() {
                 const url = document.getElementById('modal-app-iconurl').value.trim();
                 if (!url) return;
+                this.img.crossOrigin = 'Anonymous';
                 this.img.src = `https://wsrv.nl/?url=${encodeURIComponent(url)}&output=png`;
             },
 
@@ -335,6 +480,7 @@
                 if (!file) return;
                 const reader = new FileReader();
                 reader.onload = (event) => {
+                    this.img.removeAttribute('crossOrigin');
                     this.img.src = event.target.result;
                 };
                 reader.readAsDataURL(file);
@@ -354,6 +500,7 @@
                 document.getElementById('icon-env-select').value = "prod";
                 document.getElementById('icon-bg-color').value = "#FFFFFF";
                 document.getElementById('bg-color-indicator').style.backgroundColor = "#FFFFFF";
+                document.getElementById('icon-bg-transparent').checked = false;
                 document.getElementById('icon-x').value = 0;
                 document.getElementById('icon-y').value = 0;
                 document.getElementById('icon-scale').value = (this.img.width > this.img.height) ? (512 / this.img.height) : (512 / this.img.width);
@@ -374,6 +521,7 @@
                     x: parseInt(document.getElementById('icon-x').value),
                     y: parseInt(document.getElementById('icon-y').value),
                     bgColor: document.getElementById('icon-bg-color').value,
+                    isTransparent: document.getElementById('icon-bg-transparent').checked,
                     sharpen: document.getElementById('icon-sharpen').checked
                 };
             },
@@ -409,11 +557,14 @@
                 const state = this.getState();
                 const canvas = document.getElementById('preview-512-canvas');
                 const ctx = canvas.getContext('2d');
-                const size = 512;
+                const size = 256;
                 
                 ctx.clearRect(0, 0, size, size);
-                ctx.fillStyle = state.bgColor;
-                ctx.fillRect(0, 0, size, size);
+                
+                if (!state.isTransparent) {
+                    ctx.fillStyle = state.bgColor;
+                    ctx.fillRect(0, 0, size, size);
+                }
                 
                 const scaleModifier = size / 512; 
                 const scale = state.scale * scaleModifier;
@@ -462,6 +613,18 @@
                 if (!this.isLoaded) return null;
                 const canvas = document.getElementById('preview-512-canvas');
                 return canvas.toDataURL('image/png').split(',')[1];
+            },
+
+            resetCustomizations() {
+                document.getElementById('icon-scale').value = 1;
+                document.getElementById('icon-x').value = 0;
+                document.getElementById('icon-y').value = 0;
+                document.getElementById('icon-bg-color').value = '#FFFFFF';
+                document.getElementById('bg-color-indicator').style.backgroundColor = '#FFFFFF';
+                document.getElementById('icon-bg-transparent').checked = false;
+                document.getElementById('icon-env-select').value = 'prod';
+                document.getElementById('icon-sharpen').checked = false;
+                this.render();
             },
 
             reset() {
@@ -531,12 +694,32 @@
             },
 
             async refreshData() {
-                UI.showLauncher(true); 
+                const cachedData = localStorage.getItem('hubAppsData');
+                if (cachedData) {
+                    try {
+                        appsData = JSON.parse(cachedData);
+                        UI.showLauncher(false);
+                    } catch (e) {
+                        console.error('Failed to parse cached data', e);
+                    }
+                } else {
+                    UI.showLauncher(true); 
+                }
+                
                 try {
-                    appsData = await API.request('getApps');
-                    UI.showLauncher(false); 
+                    const freshData = await API.request('getApps');
+                    appsData = freshData;
+                    localStorage.setItem('hubAppsData', JSON.stringify(appsData));
+                    
+                    if (document.getElementById('view-launcher').classList.contains('hidden') === false) {
+                        UI.showLauncher(false);
+                    } else if (document.getElementById('view-settings').classList.contains('hidden') === false) {
+                        UI.renderSettingsList();
+                    }
                 } catch (err) {
-                    document.getElementById('loading-indicator').innerHTML = `<span class="text-red-500 font-medium text-sm mt-4">Failed to load workspace.<br>${err.message}</span>`;
+                    if (!cachedData) {
+                        document.getElementById('loading-indicator').innerHTML = `<span class="text-red-500 font-medium text-sm mt-4">Failed to load workspace.<br>${err.message}</span>`;
+                    }
                 }
             },
 
@@ -602,8 +785,14 @@
                             base64: base64Data,
                             mimeType: 'image/png'
                         });
-                    } else if (document.getElementById('icon-url-container').classList.contains('hidden') === false) {
+                    } else if (!document.getElementById('icon-url-container').classList.contains('hidden')) {
                         iconUrl = document.getElementById('modal-app-iconurl').value.trim();
+                    } else if (!document.getElementById('icon-drive-container').classList.contains('hidden')) {
+                        const driveVal = document.getElementById('modal-app-icondrive').value.trim();
+                        if (driveVal) {
+                            const driveId = IconStudio.extractDriveId(driveVal);
+                            iconUrl = `https://drive.google.com/thumbnail?id=${driveId}&sz=w512`;
+                        }
                     }
 
                     const appData = { id, name, url, iconUrl };
@@ -621,6 +810,7 @@
                         appsData.push({ ID: newIdObj.id, Name: name, URL: url, IconURL: iconUrl, OrderIndex: appsData.length });
                     }
                     
+                    localStorage.setItem('hubAppsData', JSON.stringify(appsData));
                     UI.closeAppModal();
                     UI.renderSettingsList();
                 } catch (err) {
@@ -637,6 +827,7 @@
                 try {
                     await API.request('deleteApp', { id });
                     appsData = appsData.filter(a => a.ID !== id);
+                    localStorage.setItem('hubAppsData', JSON.stringify(appsData));
                     UI.renderSettingsList();
                 } catch (err) {
                     alert("Failed to delete: " + err.message);
@@ -649,6 +840,7 @@
                 try {
                     await API.request('reorderApps', { orderedIds });
                     appsData.sort((a,b) => orderedIds.indexOf(a.ID) - orderedIds.indexOf(b.ID));
+                    localStorage.setItem('hubAppsData', JSON.stringify(appsData));
                 } catch (err) {
                     console.error("Failed to reorder:", err);
                 }
